@@ -1,0 +1,118 @@
+cmake_minimum_required(VERSION 2.8.3)
+project(fast_change_detection)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_RELEASE} /std:c++14 /EHsc -DNDEBUG /O2 -D_USE_MATH_DEFINES")
+set(CMAKE_BUILD_TYPE Release)
+
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_RELEASE} /std:c++14 /EHsc -DDEBUG /O2 -D_USE_MATH_DEFINES")
+#set(CMAKE_BUILD_TYPE Debug)
+
+SET(OpenCV_DIR "../../opencv440/build/")
+SET(SDL2_DIR "../../SDL2-2.0.12/")
+SET(GLEW_USE_STATIC_LIBS FALSE)
+list(APPEND CMAKE_PREFIX_PATH "C:/Program Files (x86)/Windows Kits/10/Include/10.0.18362.0/um")
+list(APPEND CMAKE_PREFIX_PATH "C:/Program Files (x86)/Windows Kits/10/Lib/10.0.18362.0/um/x64")
+#SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "../../glew-2.2.0/")
+SET(BOOST_ROOT "../../boostroot")
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "C:/Users/olivier.roupin/Documents/catkin_ws")
+
+#find_package(glow REQUIRED)#find_package(catkin REQUIRED COMPONENTS glow)
+find_package(OpenCV REQUIRED)
+find_package(OpenGL REQUIRED)
+find_package(SDL2 REQUIRED)
+find_package(GLEW REQUIRED)
+set(Boost_USE_STATIC_LIBS TRUE)
+find_package(Boost REQUIRED COMPONENTS filesystem system)
+SET(glow_INCLUDE_DIRS "../glow/src" ${Boost_INCLUDE_DIR})
+#SET(glow_LIBRARIES "../bin/Release/glow" "../bin/Release/glow_util")
+SET(glow_LIBRARIES "../bin/Debug/glow" "../bin/Debug/glow_util")
+
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+
+include_directories(${glow_INCLUDE_DIRS})
+include_directories(${GLEW_INCLUDE_DIRS}
+                    ${OpenCV_INCLUDE_DIRS}
+                    ../../eigen3/
+                    ${SDL2_INCLUDE_DIRS}
+                    src)
+
+set(FASTCD_SHADER_SRC ${CMAKE_BINARY_DIR}/fastcd_shaders.cpp)
+set(VISUALIZER_SHADER_SRC ${CMAKE_BINARY_DIR}/visualizer_shaders.cpp)
+
+include(../glow/cmake/GlowShaderCompilation.cmake)
+include(../glow/cmake/GenCppFile.cmake)
+
+compile_shaders(${FASTCD_SHADER_SRC}
+src/fastcd/shaders/project_mesh.vert
+src/fastcd/shaders/project_mesh.frag
+src/fastcd/shaders/normal_mesh.vert
+src/fastcd/shaders/normal_mesh.frag
+src/fastcd/shaders/delta.vert
+src/fastcd/shaders/delta.frag
+src/fastcd/shaders/min_delta.frag
+src/fastcd/shaders/min_delta_blur.frag
+src/fastcd/shaders/warp.vert
+src/fastcd/shaders/warp.frag
+src/fastcd/shaders/shadow.vert
+src/fastcd/shaders/shadow.frag
+src/fastcd/shaders/test.vert
+src/fastcd/shaders/test.frag
+)
+
+
+
+add_library(fastcd
+src/fastcd/camera.cpp
+src/fastcd/camera_extension.cpp
+src/fastcd/image.cpp
+src/fastcd/image_extension.cpp
+src/fastcd/processed_image.cpp
+src/fastcd/processed_image_extension.cpp
+src/fastcd/image_sequence.cpp
+src/fastcd/image_sequence_extension.cpp
+src/fastcd/point_covariance2d.cpp
+src/fastcd/point_covariance3d.cpp
+src/fastcd/point_covariance3d_extension.cpp
+src/fastcd/depth_projector.cpp
+src/fastcd/depth_projector_extension.cpp
+src/fastcd/mesh.cpp
+src/fastcd/regions3d_projector.cpp
+src/fastcd/regions3d_projector_extension.cpp
+src/fastcd/change_detector.cpp
+src/fastcd/change_detector_extension.cpp
+src/fastcd/regions_matcher_hist.cpp
+src/fastcd/regions_matcher_hist_extension.cpp
+src/utils/otsu_miki.cpp
+
+${FASTCD_SHADER_SRC}
+)
+
+target_link_libraries(fastcd  ${glow_LIBRARIES} ${OpenCV_LIBS} ${Boost_LIBRARIES})#${catkin_LIBRARIES}
+
+add_executable(change_detection src/change_detection.cpp
+                                src/utils/obj_reader.cpp
+                                src/utils/obj_reader_extension.cpp
+                                ${FASTCD_SHADER_SRC}
+                                )
+
+target_link_libraries(change_detection fastcd ${OPENGL_LIBRARIES} ${glow_LIBRARIES} ${GLEW_LIBRARIES} ${Boost_LIBRARIES} ${SDL2_LIBRARIES})
+
+add_executable(change_detection_shaders src/change_detection_shaders.cpp
+                                        src/utils/obj_reader.cpp
+                                        src/utils/obj_reader_extension.cpp
+                                        ${FASTCD_SHADER_SRC}
+                                        )
+
+target_link_libraries(change_detection_shaders fastcd ${OPENGL_LIBRARIES} ${glow_LIBRARIES} ${GLEW_LIBRARIES} ${Boost_LIBRARIES} ${SDL2_LIBRARIES})
+
+# Generate API documentation with Doxygen
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile @ONLY)
+  add_custom_target(doc ALL
+    ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Generating API documentation with Doxygen" VERBATIM
+  )
+endif(DOXYGEN_FOUND)

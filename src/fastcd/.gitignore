@@ -1,0 +1,20 @@
+# Ignore everything
+*
+
+# But not these files...
+!.gitignore
+!*_extension.cpp
+#!processed_image_cnpy.cpp
+!processed_image_depth.cpp
+!processed_image_warping.cpp
+!*.h
+image_region.h
+point_covariance2d.h
+regions_matcher.h
+# etc...
+
+# ...even if they are in subdirectories
+!*/
+
+# if the files to be tracked are in subdirectories
+!*/*
