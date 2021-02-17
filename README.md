@@ -41,7 +41,7 @@ The ScanNet dataset is available at http://www.scan-net.org/
 The 3D models used in our dataset are downloadable at:
 * `shelf`- https://www.turbosquid.com/3d-models/3d-shelf-model-1548060
 * `car`- https://www.turbosquid.com/3d-models/simple-car-model-1330846
-* `robot`- https://www.turbosquid.com/3d-models/free-max-mode-baymax-big-hero-6/881191
+* `robot`
 * `stone`- https://www.turbosquid.com/3d-models/mountain-rock-pbr-8k-3d-model-1300107
 * `plant`- https://www.turbosquid.com/3d-models/3d-plants-1528072
 * `box`- https://www.turbosquid.com/3d-models/sci-fi-military-container-3d-model-1369994
