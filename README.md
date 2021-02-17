@@ -101,9 +101,9 @@ models and datasets, and cite this project as:
 
 ```
 @article{roupin2020ordetection,
-	title={Detection of Removed Objects in 3D Meshes Using Up-to-Date Images for Mixed Reality Applications},
-	author={Roupin, Olivier and Fradet, Matthieu and Baillard, Caroline and Moreau, Guillaume},
-	year={2021},
+  title={Detection of Removed Objects in 3D Meshes Using Up-to-Date Images for Mixed Reality Applications},
+  author={Roupin, Olivier and Fradet, Matthieu and Baillard, Caroline and Moreau, Guillaume},
+  year={2021},
   journal={Electronics},
   volume={10},
   number={4},
