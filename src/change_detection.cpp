@@ -197,7 +197,7 @@ int main(int argc, char **argv) {
   SDL_GLContext context = SDL_GL_CreateContext(window);
 
   if (argc < 2) {
-    std::cout << "Usage: fastcd_example DATASET_PATH [kernel_size] [max_comparisons] [rescale_width] [threshold_change_area] [threshold_change_value]" << std::endl;
+    std::cout << "Usage: change_detection DATASET_PATH [kernel_size] [max_comparisons] [rescale_width] [threshold_change_area] [threshold_change_value]" << std::endl;
     return -1;
   }
 
